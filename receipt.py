@@ -19,7 +19,7 @@ import html
 class ReceiptGenerator:
     def __init__(self):
         """Initialize receipt generator"""
-        self.hotel_name = "CHUMUN RESTAURANT & RESIDENCY"
+        self.hotel_name = "CHUNMUN RESTAURANT & RESIDENCY"
         self.address = "Megha Road, Kurud, Chhattisgarh, India"
         self.gstin = "22IOLPS6709M1Z6"
         self.phone = "+91 74149 83156"
