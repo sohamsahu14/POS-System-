@@ -19,10 +19,10 @@ import html
 class ReceiptGenerator:
     def __init__(self):
         """Initialize receipt generator"""
-        self.hotel_name = "CHUNMUN RESTAURANT & RESIDENCY"
-        self.address = "Megha Road, Kurud, Chhattisgarh, India"
+        self.hotel_name = "CAPITAL 409"
+        self.address = "In Front of BPCL Petrol Pump NH 30, Abhanpur, Chhattisgarh, India"
         self.gstin = "22IOLPS6709M1Z6"
-        self.phone = "+91 74149 83156"
+        self.phone = "+91 79997 45604"
     
     def generate_receipt(self, bill_data, output_path='receipts'):
         """
@@ -169,8 +169,8 @@ class ReceiptGenerator:
         # Tax and Total Section
         tax_data = [
             ['Subtotal:', f"Rs{bill_data['subtotal']:.2f}"],
-            ['CGST (9%):', f"Rs{bill_data['cgst']:.2f}"],
-            ['SGST (9%):', f"Rs{bill_data['sgst']:.2f}"],
+            ['CGST (5%):', f"Rs{bill_data['cgst']:.2f}"],
+            ['SGST (5%):', f"Rs{bill_data['sgst']:.2f}"],
             ['TOTAL AMOUNT:', f"Rs{bill_data['total']:.2f}"],
         ]
         
@@ -225,14 +225,29 @@ class ReceiptGenerator:
             print(f"Error opening PDF: {e}")
     
     def print_pdf(self, filepath):
-        """Print PDF using system print command"""
+        """Print PDF using OS-level printing (best-effort to open print dialog)"""
         try:
             if platform.system() == 'Darwin':  # macOS
-                subprocess.call(['lpr', filepath])
+                # Open in Preview and trigger the standard print dialog (Cmd+P)
+                subprocess.call(['open', '-a', 'Preview', filepath])
+                try:
+                    subprocess.call([
+                        'osascript',
+                        '-e', 'tell application "Preview" to activate',
+                        '-e', 'tell application "System Events" to keystroke "p" using command down'
+                    ])
+                except Exception:
+                    # Fallback: print silently if AppleScript is unavailable
+                    subprocess.call(['lpr', filepath])
             elif platform.system() == 'Windows':
                 os.startfile(filepath, 'print')
             else:  # Linux
-                subprocess.call(['lpr', filepath])
+                # Many Linux distros don't expose a universal print dialog CLI.
+                # Best-effort: open in the default viewer; user can print from there.
+                try:
+                    subprocess.call(['xdg-open', filepath])
+                except Exception:
+                    subprocess.call(['lpr', filepath])
         except Exception as e:
             print(f"Error printing PDF: {e}")
 
